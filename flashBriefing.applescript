@@ -1,4 +1,7 @@
 set apiURL to "https://api.darksky.net/forecast/FAKEURL"
+set birthdayCalendar to "Birthdays"
+set calendars to "Home, Work, US Holidays"
+
 
 setSpeakers()
 
@@ -32,7 +35,7 @@ on strSplit(theString, theDelimiter)
 end strSplit
 
 on getTodayBirthdays()
-	set todaysBirthdays to (do shell script "/usr/local/bin/icalBuddy -ic \"Birthdays\" -b \"***\" -npn -nc -ps \"| ::: |\" -po \"datetime,title\"  -eed eventsToday")
+	set todaysBirthdays to (do shell script "/usr/local/bin/icalBuddy -ic \"" & birthdayCalendar & "\" -b \"***\" -npn -nc -ps \"| ::: |\" -po \"datetime,title\"  -eed eventsToday")
 	
 	set myArray to my strSplit(todaysBirthdays, return)
 	
@@ -56,7 +59,7 @@ on getUpcomingBirthdays()
 	set startDate to do shell script "date -v+1d +%m/%d/%Y"
 	set endDate to do shell script "date -v+7d +%m/%d/%Y"
 	
-	set birthdays to (do shell script "/usr/local/bin/icalBuddy -df %A -ic \"Birthdays\" -b \"\" -npn -nrd -nc -ps \"| ::: |\" -po \"datetime,title\"  -eed eventsFrom:" & startDate & " to:" & endDate)
+	set birthdays to (do shell script "/usr/local/bin/icalBuddy -df %A -ic \"" & birthdayCalendar & "\" -b \"\" -npn -nrd -nc -ps \"| ::: |\" -po \"datetime,title\"  -eed eventsFrom:" & startDate & " to:" & endDate)
 	
 	set myArray to my strSplit(birthdays, return)
 	
@@ -76,34 +79,11 @@ on getUpcomingBirthdays()
 	return endResult
 end getUpcomingBirthdays
 
-on getUpcomingHolidays()
-	set startDate to do shell script "date -v+1d +%m/%d/%Y"
-	set endDate to do shell script "date -v+7d +%m/%d/%Y"
-	
-	set holidays to (do shell script "/usr/local/bin/icalBuddy -df %A -ic \"US Holidays\" -b \"\" -npn -nrd -nc -ps \"| ::: |\" -po \"datetime,title\"  -eed eventsFrom:" & startDate & " to:" & endDate)
-	
-	set myArray to my strSplit(holidays, return)
-	
-	set listSize to count of myArray
-	
-	set endResult to ""
-	
-	if listSize is greater than 0 then
-		repeat with theItem in myArray
-			set thisHoliday to my strSplit(theItem, " ::: ")
-			set thisDay to item 1 of thisHoliday
-			set thisName to item 2 of thisHoliday
-			set endResult to endResult & thisName & " is on " & thisDay & "; "
-		end repeat
-	end if
-	return endResult
-end getUpcomingHolidays
-
 on getWeeklyOverview()
 	set startDate to do shell script "date -v+1d +%m/%d/%Y"
 	set endDate to do shell script "date -v+7d +%m/%d/%Y"
 	
-	set weeklyEvents to (do shell script "/usr/local/bin/icalBuddy -df %A -ic \"Home, Work, US Holidays\" -npn -nrd -nc -ps \"| ::: |\" -po \"datetime,title\"  -eed eventsFrom:" & startDate & " to:" & endDate)
+	set weeklyEvents to (do shell script "/usr/local/bin/icalBuddy -df %A -ic \"" & calendars & "\" -npn -nrd -nc -ps \"| ::: |\" -po \"datetime,title\"  -eed eventsFrom:" & startDate & " to:" & endDate)
 	
 	set weeklyEvents to ((characters 2 thru -1 of weeklyEvents) as string)
 	set myArray to my strSplit(weeklyEvents, "¥")
@@ -125,7 +105,7 @@ on getWeeklyOverview()
 end getWeeklyOverview
 
 on getTodayEvents()
-	set todaysEvents to (do shell script "/usr/local/bin/icalBuddy -ic \"Home, Work,US Holidays\" -b \"***\" -npn -nc -ps \"| ::: |\" -po \"datetime,title\"  -eed eventsToday")
+	set todaysEvents to (do shell script "/usr/local/bin/icalBuddy -ic \"" & calendars & "\" -b \"***\" -npn -nc -ps \"| ::: |\" -po \"datetime,title\"  -eed eventsToday")
 
 	set myArray to my strSplit(todaysEvents, "***")
 	
